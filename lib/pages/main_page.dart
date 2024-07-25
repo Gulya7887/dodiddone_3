@@ -12,9 +12,9 @@ class _MainPageState extends State<MainPage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Задачи'),
-    Text('Сегодня'),
-    Text('Профиль'),
+    Text('Сегодня'),   
     Text('Выполнено'),
+    Text('Профиль'),
   ];
 
   void _onItemTapped(int index) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'main_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -129,7 +131,10 @@ class _LoginPageState extends State<LoginPage> {
 
                   // Switch to Signup/Login
                   TextButton(
-                    onPressed: () {
+                    onPressed: () {Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MainPage()),
+                    );
                       setState(() { // Use setState from StatefulBuilder
                         _isSignIn = !_isSignIn;
                       });

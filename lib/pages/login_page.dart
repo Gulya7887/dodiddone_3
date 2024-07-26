@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
                     Theme.of(context).hintColor,
                     Theme.of(context).primaryColor,
                   ],
-            stops: const [0.3, 1.0], // Primary color takes 70% of space
+            stops: const [0.7, 1.0], // Primary color takes 70% of space
           ),
         ),
         child: Padding(
@@ -41,16 +41,51 @@ class _LoginPageState extends State<LoginPage> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Title
-                  Text(
-                    _isSignIn ? 'Вход' : 'Регистрация',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2276FD),
+                  // Image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24), // Rounded corners
+                    child: Image.asset(
+                      'assets/LOGO.png',
+                      width: 280,
+                      height: 280,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 16),
+
+                  // Title
+                  RichText(
+                    text: const TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 40,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Do',
+                          style: TextStyle(
+                            color: Color(0xFF2276FD),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Did',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Done',
+                          style: TextStyle(
+                            color: Color(0xFF2276FD),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   // Email Field
                   SizedBox(
@@ -107,11 +142,15 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // Login Button
                   ElevatedButton(
                     onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainPage()),
+                      );
                       // Handle login/signup logic here
                     },
                     style: ElevatedButton.styleFrom(
@@ -127,14 +166,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Text(_isSignIn ? 'Войти' : 'Зарегистрироваться'),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 16),
 
                   // Switch to Signup/Login
                   TextButton(
-                    onPressed: () {Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainPage()),
-                    );
+                    onPressed: () {
                       setState(() { // Use setState from StatefulBuilder
                         _isSignIn = !_isSignIn;
                       });

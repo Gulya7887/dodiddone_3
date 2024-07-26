@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:dodiddone_3/screens/profile.dart'; // Import ProfilePage
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -14,7 +15,7 @@ class _MainPageState extends State<MainPage> {
     Text('Задачи'),
     Text('Сегодня'),
     Text('Выполнено'),
-    Text('Профиль'),
+    ProfilePage(), // Use ProfilePage directly
   ];
 
   void _onItemTapped(int index) {
@@ -58,14 +59,14 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Сегодня',
-            ),
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
             label: 'Выполнено',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Профиль',      
+            label: 'Профиль',
           ),
         ],
         currentIndex: _selectedIndex,

@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _isSignIn = true;
 
-  get primarySwatch => null; // Track if user is on login or signup page
+  get primarySwatch => null; 
 
   @override
   Widget build(BuildContext context) {
@@ -31,19 +31,19 @@ class _LoginPageState extends State<LoginPage> {
                     Theme.of(context).hintColor,
                     Theme.of(context).primaryColor,
                   ],
-            stops: const [0.7, 1.0], // Primary color takes 70% of space
+            stops: const [0.7, 1.0], 
           ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: StatefulBuilder(
-            builder: (context, setState) { // Use StatefulBuilder
+            builder: (context, setState) { 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Image
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(24), // Rounded corners
+                    borderRadius: BorderRadius.circular(24), 
                     child: Image.asset(
                       'assets/LOGO.png',
                       width: 280,
@@ -122,9 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Repeat Password Field (Only shown for signup)
+                  const SizedBox(height: 16),                
                   if (!_isSignIn)
                     SizedBox(
                       height: 48, // Set height to 48 pixels
@@ -167,11 +165,10 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(_isSignIn ? 'Войти' : 'Зарегистрироваться'),
                   ),
                   const SizedBox(height: 16),
-
-                  // Switch to Signup/Login
+                  
                   TextButton(
                     onPressed: () {
-                      setState(() { // Use setState from StatefulBuilder
+                      setState(() { 
                         _isSignIn = !_isSignIn;
                       });
                     },

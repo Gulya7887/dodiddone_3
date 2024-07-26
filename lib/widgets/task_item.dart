@@ -118,5 +118,3 @@ class TaskItem extends StatelessWidget {
   }
 }
 
-// Remove the enum for task priority
-// enum TaskPriority { urgent, medium, low }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/task_item.dart';
+
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
 
@@ -22,16 +24,10 @@ class _TaskPageState extends State<TaskPage> {
        ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(tasks[index]),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                setState(() {
-                  tasks.removeAt(index);
-                });
-              },
-            ),
+          return TaskItem(
+            title: tasks[index],
+            description: "Описание задачи",
+            deadline: DateTime.now(), priority: null,
           );
         },
       );
@@ -45,6 +41,5 @@ class _TaskPageState extends State<TaskPage> {
         },
         child: const Icon(Icons.add),
       );
-    ;
   }
 }

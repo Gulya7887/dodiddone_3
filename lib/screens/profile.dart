@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             // Avatar (You can replace this with a placeholder or actual image)
             const CircleAvatar(
-              radius: 50,
+              radius: 70,
               backgroundImage: AssetImage(
                   'assets/AVATAR.png'), // Replace with your avatar image
             ),
@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 24),
 
             // Email Verification Button (Only show if email is not verified)
 ElevatedButton(

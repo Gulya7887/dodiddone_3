@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:dodiddone_3/services/firebase_auth.dart'; // Import AuthService
+// ignore: unused_import
+import 'package:dodiddone_3/pages/login_page.dart'; // Import LoginPage
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -6,15 +9,37 @@ class ProfilePage extends StatefulWidget {
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
+
 class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService = AuthService(); // Create an instance of AuthService
+  String? _userEmail;
+  String? _userAvatarUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      setState(() {
+        _userEmail = user.email;
+        _userAvatarUrl = user.photoURL;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isEmailVerified = _authService.currentUser?.emailVerified ?? false;
+
     return Padding(
-      // Wrap Container with Padding
       padding: const EdgeInsets.all(20.0),
       child: Container(
-        height: double.infinity, // Занимает всю высоту экрана
-        width: double.infinity, // Занимает всю ширину экрана
+        height: double.infinity,
+        width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -29,18 +54,19 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Avatar (You can replace this with a placeholder or actual image)
-            const CircleAvatar(
+            // Avatar
+            CircleAvatar(
               radius: 70,
-              backgroundImage: AssetImage(
-                  'assets/AVATAR.png'), // Replace with your avatar image
+              backgroundImage: _userAvatarUrl != null
+                  ? NetworkImage(_userAvatarUrl!)
+                  : const AssetImage('assets/AVATAR.png'),
             ),
             const SizedBox(height: 20),
 
             // Email
-            const Text(
-              'example@email.com',
-              style: TextStyle(
+            Text(
+              _userEmail ?? 'example@email.com',
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -48,36 +74,51 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 24),
 
-            // Email Verification Button (Only show if email is not verified)
-ElevatedButton(
-              onPressed: () async {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF33A0FB),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            // Кнопка подтверждения почты (отображается, если почта не подтверждена)
+            if (!isEmailVerified)
+              ElevatedButton(
+                onPressed: () async {
+                  await _authService.sendEmailVerification();
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Подтверждение почты'),
+                      content: const Text(
+                          'Письмо с подтверждением отправлено на ваш адрес.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pushReplacement(context , 
+                          MaterialPageRoute (builder: (context) => const LoginPage() )),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF33A0FB),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                child: const Text('Подтвердить почту'),
               ),
-              child: const Text('Подтвердить почту'),
-            ),
             const SizedBox(height: 20),
 
-            // Logout Button
+            // Кнопка выхода
             ElevatedButton(
-              onPressed: () {
-                // Navigate back to login page or home page
-                Navigator.pushReplacementNamed(
-                    context, '/login'); // Replace with your login route
+              onPressed: () async {
+                await _authService.signOut();
+                Navigator.pushReplacementNamed(context, '/login');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF33A0FB),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 textStyle: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -91,7 +132,15 @@ ElevatedButton(
           ],
         ),
       ),
-      // ignore: dead_code
     );
   }
 }
+
+
+
+
+
+
+
+
+

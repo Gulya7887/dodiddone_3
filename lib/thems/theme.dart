@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class DoDidDoneTheme {
   static ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.blue,
@@ -54,6 +55,7 @@ class DoDidDoneTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
 
+
       hintStyle: const TextStyle(
         color: Color(0xFFB8B8B8), // Hint text color
       ),
@@ -65,6 +67,7 @@ class DoDidDoneTheme {
       ),
     ),
   );
+
 
   static ThemeData darkTheme = ThemeData(
     primarySwatch: Colors.blue,

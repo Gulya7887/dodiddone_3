@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:dodiddone_3/thems/theme.dart'; // Import your theme file
@@ -6,8 +8,11 @@ class TaskItem extends StatelessWidget {
   final String title;
   final String description;
   final DateTime deadline;
-  final Function? onEdit; // Add onEdit callback
   final Function? onDelete; // Add onDelete callback
+  final Function? onEdit; // Add onEdit callback
+  final Function? toLeft; // Вызываем функцию, если элемент был сдвинут влево
+  final Function? toRight; // Вызываем функцию, если элемент был сдвинут вправо
+  final String documentId; // Добавьте documentId
 
   const TaskItem({
     super.key,
@@ -15,7 +20,10 @@ class TaskItem extends StatelessWidget {
     required this.description,
     required this.deadline,
     this.onEdit,
-    this.onDelete, required priority,
+    this.onDelete,
+    this.toLeft,
+    this.toRight,
+    required this.documentId, required priority, // Добавьте documentId
   });
 
   @override
@@ -98,7 +106,7 @@ class TaskItem extends StatelessWidget {
   LinearGradient getGradientForDeadline(Duration difference) {
     if (difference.inDays < 1) {
       return const LinearGradient(
-        colors: [Color.fromARGB(0, 240, 87, 5), Colors.white],
+        colors: [const Color(0xFFFF20A6), Colors.white],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       );
@@ -116,5 +124,13 @@ class TaskItem extends StatelessWidget {
       );
     }
   }
+
+  // Function to mark a task as completed
+
+  // Function to mark a task for today
 }
+
+
+  
+
 

@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dodiddone_3/screens/profile.dart';
+// ignore: unused_import
+import 'package:dodiddone_3/screens/all_tasks.dart';
 
-import '../screens/all_tasks.dart'; // Import ProfilePage
+import '../screens/completed.dart';
+import '../screens/for_today.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,9 +18,9 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    TaskPage(),
-    Text('Сегодня'),
-    Text('Выполнено'),
+    TaskPage(), // Use TaskPage directly
+    ForTodayPage(), // Use ForTodayPage directly
+    CompletedPage(), // Use CompletedPage directly
     ProfilePage(), // Use ProfilePage directly
   ];
 
@@ -36,7 +40,7 @@ class _MainPageState extends State<MainPage> {
             borderRadius: BorderRadius.circular(16), // Rounded corners
           ),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             width: 400, // Set width to 400 pixels
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -45,11 +49,11 @@ class _MainPageState extends State<MainPage> {
                 const Text(
                   'Добавить задачу',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 // Title Field
                 TextField(
                   decoration: const InputDecoration(
@@ -57,7 +61,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                   controller: _titleController,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Description Field
                 TextField(
                   decoration: const InputDecoration(
@@ -65,7 +69,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                   controller: _descriptionController,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Deadline Picker
                 ElevatedButton(
                   onPressed: () {
@@ -99,7 +103,7 @@ class _MainPageState extends State<MainPage> {
                   },
                   child: const Text('Выбрать дедлайн'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Add Task Button
                 ElevatedButton(
                   onPressed: () {
@@ -132,17 +136,26 @@ class _MainPageState extends State<MainPage> {
   DateTime _deadline = DateTime.now();
 
   // Function to add a new task
-  void _addTask() {
+  void _addTask() async {
     // Get the values from the controllers
     String title = _titleController.text;
     String description = _descriptionController.text;
 
-    // Add the task to the list
-    // (You'll need to replace this with your actual task data handling)
-    // For example, you might use a database or a local storage
-    // to store the tasks.
-    // Here, we're just adding it to the tasks list for demonstration.
-    // tasks.add(title);
+    // Add the task to Firestore
+    try {
+      await FirebaseFirestore.instance.collection('tasks').add({
+        'title': title,
+        'description': description,
+        'deadline': _deadline,
+        'priority': 'Normal', // You can add priority later
+        'completed': false,
+        'forToday': false,
+      });
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error adding task: $e');
+      // Handle the error appropriately (e.g., show an error message)
+    }
   }
 
   @override

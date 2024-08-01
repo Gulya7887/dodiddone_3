@@ -70,6 +70,7 @@ class DoDidDoneTheme {
     primarySwatch: Colors.blue,
     primaryColor: const Color(0xFFD87AEA),
     hintColor: const Color(0xFFFFD186),
+    primaryColorDark: const Color(0xFFFF20A6),
     brightness: Brightness.dark,
     fontFamily: 'Roboto',
     textTheme: const TextTheme(

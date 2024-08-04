@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/task_item.dart';
 // ignore: unused_import
 import '../pages/main_page.dart'; // Import MainPage
+import 'package:dodiddone_3/services/firebase_auth.dart'; // Import AuthService
 
 class ForTodayPage extends StatefulWidget {
   const ForTodayPage({super.key});
@@ -14,9 +15,11 @@ class ForTodayPage extends StatefulWidget {
 class _ForTodayPageState extends State<ForTodayPage> {
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks'); // Используй правильное имя коллекции 
+  final AuthService _authService = AuthService(); // Create an instance of AuthService
+  String? _userAvatarUrl;
+  String? _userId;
 
   // Функция для обновления UI после завершения задачи
-  // ignore: unused_element
   void _toRight(String documentId) async {
     try {
       // Обновляем статус задачи в Firestore
@@ -45,29 +48,83 @@ class _ForTodayPageState extends State<ForTodayPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      setState(() {
+        _userAvatarUrl = user.photoURL;
+        _userId = user.uid;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.where('forToday', isEqualTo: true).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(child: Text('Ошибка загрузки задач'));
-        }
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor, // Set background color to primaryColor
+        title: Row(
+          children: [
+            const Text(
+              'DoDidDone - порядок во всем',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 24),
+            CircleAvatar(
+              radius: 26,
+              backgroundImage: _userAvatarUrl != null
+                  ? NetworkImage(_userAvatarUrl!)
+                  : const AssetImage('assets/AVATAR.png'),
+            ),
+          ],
+        ),
+      ),
+      body: Container( // Wrap the body with a Container
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor, // Use primary color
+              Theme.of(context).hintColor, // Use hint color
+            ],
+            stops: const [0.3, 1.0], // Primary color takes 70% of space
+          ),
+        ),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _tasksCollection
+              .where('createdBy', isEqualTo: _userId) // Фильтруем по ID пользователя
+              .where('forToday', isEqualTo: true)
+              .snapshots(), // Используем фильтр
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(child: Text('Ошибка загрузки задач'));
+            }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        // Проверяем, не null ли snapshot.data
-        if (snapshot.data == null) {
-          return const Center(child: Text('Нет данных'));
-        }
+            // Проверяем, не null ли snapshot.data
+            if (snapshot.data == null) {
+              return const Center(child: Text('Нет данных'));
+            }
 
-        final tasks = snapshot.data!.docs.where((task) {
-          final taskData = task.data() as Map<String, dynamic>;
-          // Проверяем, не null ли значения 'forToday'
-          return (taskData['forToday'] ?? false) == true;
-        }).toList(); // Фильтруем задачи
-        if (tasks.isEmpty) {
+            final tasks = snapshot.data!.docs.where((task) {
+              final taskData = task.data() as Map<String, dynamic>;
+              // Проверяем, не null ли значения 'forToday'
+              return (taskData['forToday'] ?? false) == true;
+            }).toList(); // Фильтруем задачи
+            if (tasks.isEmpty) {
              return const Center(child: Text(
             'Ура!Сегодня можно отдыхать!'));
         }
@@ -122,15 +179,16 @@ class _ForTodayPageState extends State<ForTodayPage> {
                   _tasksCollection
                       .doc(documentId)
                       .update({'forToday': true, 'completed': false});
-              },
+                },
               ),
-              
             );
           },
         );
       },
-    );
-  }
+    ),
+  )
+ );
+  
 }
 
-
+}

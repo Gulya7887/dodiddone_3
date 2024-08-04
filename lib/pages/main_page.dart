@@ -1,21 +1,32 @@
+// ignore: unused_import
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dodiddone_3/screens/profile.dart';
 // ignore: unused_import
 import 'package:dodiddone_3/screens/all_tasks.dart';
+// ignore: unused_import
+import 'package:intl/intl.dart'; // Import intl package for date formatting
+
 
 import '../screens/completed.dart';
 import '../screens/for_today.dart';
+import '../widgets/dialog_widget.dart';
+import 'package:dodiddone_3/services/firebase_auth.dart'; // Import AuthService
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
+
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  final AuthService _authService = AuthService(); // Create an instance of AuthService
+  // ignore: unused_field
+  String? _userAvatarUrl;
 
   static const List<Widget> _widgetOptions = <Widget>[
     TaskPage(), // Use TaskPage directly
@@ -24,137 +35,48 @@ class _MainPageState extends State<MainPage> {
     ProfilePage(), // Use ProfilePage directly
   ];
 
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+
   // Function to show the dialog for adding a new task
   void _showAddTaskDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog( // Use Dialog instead of AlertDialog
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16), // Rounded corners
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            width: 400, // Set width to 400 pixels
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Title
-                const Text(
-                  'Добавить задачу',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Title Field
-                TextField(
-                  decoration: const InputDecoration(
-                    labelText: 'Название задачи',
-                  ),
-                  controller: _titleController,
-                ),
-                const SizedBox(height: 12),
-                // Description Field
-                TextField(
-                  decoration: const InputDecoration(
-                    labelText: 'Описание',
-                  ),
-                  controller: _descriptionController,
-                ),
-                const SizedBox(height: 12),
-                // Deadline Picker
-                ElevatedButton(
-                  onPressed: () {
-                    // Show a date picker
-                    showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
-                    ).then((pickedDate) {
-                      if (pickedDate != null) {
-                        // Show a time picker after the date is selected
-                        showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        ).then((pickedTime) {
-                          if (pickedTime != null) {
-                            setState(() {
-                              _deadline = DateTime(
-                                pickedDate.year,
-                                pickedDate.month,
-                                pickedDate.day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
-                            });
-                          }
-                        });
-                      }
-                    });
-                  },
-                  child: const Text('Выбрать дедлайн'),
-                ),
-                const SizedBox(height: 16),
-                // Add Task Button
-                ElevatedButton(
-                  onPressed: () {
-                    // Add the task to the list
-                    setState(() {
-                      // Add the task to the list
-                      _addTask();
-                      // Clear the controllers
-                      _titleController.clear();
-                      _descriptionController.clear();
-                    });
-                    // Close the dialog
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Добавить'),
-                ),
-              ],
-            ),
-          ),
-        );
+        return const DialogWidget();
       },
     );
   }
 
+
   // Controllers for the text fields
+  // ignore: unused_field
   final _titleController = TextEditingController();
+  // ignore: unused_field
   final _descriptionController = TextEditingController();
 
+
   // Variable to store the deadline
-  DateTime _deadline = DateTime.now();
+  // ignore: unused_field
+  final DateTime _deadline = DateTime.now();
 
-  // Function to add a new task
-  void _addTask() async {
-    // Get the values from the controllers
-    String title = _titleController.text;
-    String description = _descriptionController.text;
+  @override
+  void initState() {
+    super.initState();
+    _getUserAvatar();
+  }
 
-    // Add the task to Firestore
-    try {
-      await FirebaseFirestore.instance.collection('tasks').add({
-        'title': title,
-        'description': description,
-        'deadline': _deadline,
-        'priority': 'Normal', // You can add priority later
-        'completed': false,
-        'forToday': false,
+  Future<void> _getUserAvatar() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      setState(() {
+        _userAvatarUrl = user.photoURL;
       });
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error adding task: $e');
-      // Handle the error appropriately (e.g., show an error message)
     }
   }
 
